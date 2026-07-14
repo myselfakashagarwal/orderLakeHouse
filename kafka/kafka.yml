@@ -1,0 +1,82 @@
+services:
+  kafka-1:
+    image: apache/kafka:latest
+    container_name: orderLakeHouseKafka091Node1
+    hostname: orderLakeHouseKafka091Node1
+    networks: [orderLakeHouseKafka091Network]
+    ports:
+      - "9091:9094"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_CLUSTER_ID: orderLakeHouseKafka091
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@orderLakeHouseKafka091Node1:9093,2@orderLakeHouseKafka091Node2:9093,3@orderLakeHouseKafka091Node3:9093
+      KAFKA_LISTENERS: INTERNAL://:9092, CONTROLLER://:9093, EXTERNAL://:9094
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://orderLakeHouseKafka091Node1:9092, EXTERNAL://localhost:9091
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT, CONTROLLER:PLAINTEXT, EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_HEAP_OPTS: "-Xmx200M -Xms200M"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+    volumes:
+      - orderLakeHouseKafka091Node1Data:/var/lib/kafka/data
+
+  kafka-2:
+    image: apache/kafka:latest
+    container_name: orderLakeHouseKafka091Node2
+    hostname: orderLakeHouseKafka091Node2
+    networks: [orderLakeHouseKafka091Network]
+    ports:
+      - "9092:9094"
+    environment:
+      KAFKA_NODE_ID: 2
+      KAFKA_CLUSTER_ID: orderLakeHouseKafka091
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@orderLakeHouseKafka091Node1:9093,2@orderLakeHouseKafka091Node2:9093,3@orderLakeHouseKafka091Node3:9093
+      KAFKA_LISTENERS: INTERNAL://:9092, CONTROLLER://:9093, EXTERNAL://:9094
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://orderLakeHouseKafka091Node2:9092, EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT, CONTROLLER:PLAINTEXT, EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_HEAP_OPTS: "-Xmx200M -Xms200M"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+    volumes:
+      - orderLakeHouseKafka091Node2Data:/var/lib/kafka/data
+
+  kafka-3:
+    image: apache/kafka:latest
+    container_name: orderLakeHouseKafka091Node3
+    hostname: orderLakeHouseKafka091Node3
+    networks: [orderLakeHouseKafka091Network]
+    ports:
+      - "9093:9094"
+    environment:
+      KAFKA_NODE_ID: 3
+      KAFKA_CLUSTER_ID: orderLakeHouseKafka091
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@orderLakeHouseKafka091Node1:9093,2@orderLakeHouseKafka091Node2:9093,3@orderLakeHouseKafka091Node3:9093
+      KAFKA_LISTENERS: INTERNAL://:9092, CONTROLLER://:9093, EXTERNAL://:9094
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://orderLakeHouseKafka091Node3:9092, EXTERNAL://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT, CONTROLLER:PLAINTEXT, EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_HEAP_OPTS: "-Xmx200M -Xms200M"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+    volumes:
+      - orderLakeHouseKafka091Node3Data:/var/lib/kafka/data
+
+networks:
+  orderLakeHouseKafka091Network:
+    name: orderLakeHouseKafka091Network
+    driver: bridge
+
+volumes:
+  orderLakeHouseKafka091Node1Data:
+    name: orderLakeHouseKafka091Node1Data
+  orderLakeHouseKafka091Node2Data:
+    name: orderLakeHouseKafka091Node2Data
+  orderLakeHouseKafka091Node3Data:
+    name: orderLakeHouseKafka091Node3Data

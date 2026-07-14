@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: orderlakehouse-kafka-to-hdfs-ingestor-svc
+  kafka:
+    bootstrap-servers:
+      - orderLakeHouseKafka091Node1:9092
+      - orderLakeHouseKafka091Node2:9092
+      - orderLakeHouseKafka091Node3:9092
+    consumer:
+      group-id: orderLakeHouseIngestorGroup
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: org.hackctl.order.orderlakehouse.ingestor.kafka.hdfs.dto.OrderRequest
+
+hdfs:
+  uri: hdfs://orderLakeHouseHdfsNameNode1:9000
+  base-path: /orders
+
+server:
+  port: 8080

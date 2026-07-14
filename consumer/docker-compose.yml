@@ -1,0 +1,44 @@
+services:
+  compile:
+    image: maven:3.9.6-eclipse-temurin-17
+    profiles:
+      - compile
+    volumes:
+      - .:/app
+      - ~/.m2:/root/.m2
+    working_dir: /app
+    command: mvn clean package -DskipTests
+  run:
+    image: eclipse-temurin:17-jre
+    profiles:
+      - run
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./target:/app/target
+    working_dir: /app
+    networks:
+      - orderLakeHouseKafka091Network
+      - orderLakeHouseHdfsNetwork
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=orderLakeHouseKafka091Node1:9092,orderLakeHouseKafka091Node2:9092,orderLakeHouseKafka091Node3:9092
+      - HDFS_URI=hdfs://orderLakeHouseHdfsNameNode1:9000
+    command: java -jar target/orderlakehouse-kafka-to-hdfs-ingestor-svc-1.0-SNAPSHOT.jar
+  deploy:
+    image: maven:3.9.6-eclipse-temurin-17
+    profiles:
+      - deploy
+    volumes:
+      - .:/app
+      - ~/.m2:/root/.m2
+      - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: /app
+    command: >
+      mvn spring-boot:build-image
+      -Dspring-boot.build-image.imageName=ghcr.io/myselfakashagarwal/orderlakehouse/orderlakehouse-kafka-to-hdfs-ingestor-svc:1.0-SNAPSHOT
+      -Dspring-boot.build-image.publish=true
+networks:
+  orderLakeHouseKafka091Network:
+    external: true
+  orderLakeHouseHdfsNetwork:
+    external: true

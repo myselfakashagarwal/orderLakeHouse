@@ -1,0 +1,138 @@
+services:
+  namenode1:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    platform: linux/amd64
+    container_name: orderLakeHouseHdfsNameNode1
+    hostname: orderLakeHouseHdfsNameNode1
+    networks:
+      - orderLakeHouseHdfsNetwork
+    ports:
+      - "9870:9870"
+      - "9000:9000"
+    environment:
+      - CLUSTER_NAME=orderLakeHouse
+      - CORE_CONF_fs_defaultFS=hdfs://orderLakeHouseHdfsNameNode1:9000
+      - HDFS_CONF_dfs_replication=2
+    volumes:
+      - orderLakeHouseHdfsNameNode1Data:/hadoop/dfs/name
+
+  namenode2:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    platform: linux/amd64
+    container_name: orderLakeHouseHdfsNameNode2
+    hostname: orderLakeHouseHdfsNameNode2
+    networks:
+      - orderLakeHouseHdfsNetwork
+    environment:
+      - CLUSTER_NAME=orderLakeHouse
+      - CORE_CONF_fs_defaultFS=hdfs://orderLakeHouseHdfsNameNode1:9000
+      - HDFS_CONF_dfs_replication=2
+    volumes:
+      - orderLakeHouseHdfsNameNode2Data:/hadoop/dfs/name
+    depends_on:
+      - namenode1
+
+  datanode1:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    platform: linux/amd64
+    container_name: orderLakeHouseHdfsDataNode1
+    hostname: orderLakeHouseHdfsDataNode1
+    networks:
+      - orderLakeHouseHdfsNetwork
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://orderLakeHouseHdfsNameNode1:9000
+      - HDFS_CONF_dfs_replication=2
+    volumes:
+      - orderLakeHouseHdfsDataNode1Data:/hadoop/dfs/data
+    depends_on:
+      - namenode1
+
+  datanode2:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    platform: linux/amd64
+    container_name: orderLakeHouseHdfsDataNode2
+    hostname: orderLakeHouseHdfsDataNode2
+    networks:
+      - orderLakeHouseHdfsNetwork
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://orderLakeHouseHdfsNameNode1:9000
+      - HDFS_CONF_dfs_replication=2
+    volumes:
+      - orderLakeHouseHdfsDataNode2Data:/hadoop/dfs/data
+    depends_on:
+      - namenode1
+
+  resourcemanager:
+    image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
+    platform: linux/amd64
+    container_name: orderLakeHouseHdfsResourceManager1
+    hostname: orderLakeHouseHdfsResourceManager1
+    networks:
+      - orderLakeHouseHdfsNetwork
+    ports:
+      - "8032:8032"
+      - "8088:8088"
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://orderLakeHouseHdfsNameNode1:9000
+      - YARN_CONF_yarn_resourcemanager_hostname=orderLakeHouseHdfsResourceManager1
+      - YARN_CONF_yarn_resourcemanager_address=orderLakeHouseHdfsResourceManager1:8032
+      - YARN_CONF_yarn_nodemanager_aux___services=mapreduce_shuffle
+    depends_on:
+      - namenode1
+
+  nodemanager1:
+    image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
+    platform: linux/amd64
+    container_name: orderLakeHouseHdfsNodeManager1
+    hostname: orderLakeHouseHdfsNodeManager1
+    networks:
+      - orderLakeHouseHdfsNetwork
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://orderLakeHouseHdfsNameNode1:9000
+      - YARN_CONF_yarn_resourcemanager_hostname=orderLakeHouseHdfsResourceManager1
+      - YARN_CONF_yarn_resourcemanager_address=orderLakeHouseHdfsResourceManager1:8032
+      - YARN_CONF_yarn_nodemanager_aux___services=mapreduce_shuffle
+      - YARN_CONF_yarn_nodemanager_resource_memory___mb=1024
+      - YARN_CONF_yarn_nodemanager_resource_cpu___vcores=2
+    volumes:
+      - orderLakeHouseHdfsNodeManager1Data:/hadoop/yarn/local
+    depends_on:
+      - resourcemanager
+
+  nodemanager2:
+    image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
+    platform: linux/amd64
+    container_name: orderLakeHouseHdfsNodeManager2
+    hostname: orderLakeHouseHdfsNodeManager2
+    networks:
+      - orderLakeHouseHdfsNetwork
+    environment:
+      - CORE_CONF_fs_defaultFS=hdfs://orderLakeHouseHdfsNameNode1:9000
+      - YARN_CONF_yarn_resourcemanager_hostname=orderLakeHouseHdfsResourceManager1
+      - YARN_CONF_yarn_resourcemanager_address=orderLakeHouseHdfsResourceManager1:8032
+      - YARN_CONF_yarn_nodemanager_aux___services=mapreduce_shuffle
+      - YARN_CONF_yarn_nodemanager_resource_memory___mb=1024
+      - YARN_CONF_yarn_nodemanager_resource_cpu___vcores=2
+    volumes:
+      - orderLakeHouseHdfsNodeManager2Data:/hadoop/yarn/local
+    depends_on:
+      - resourcemanager
+
+networks:
+  orderLakeHouseHdfsNetwork:
+    name: orderLakeHouseHdfsNetwork
+    driver: bridge
+
+volumes:
+  orderLakeHouseHdfsNameNode1Data:
+    name: orderLakeHouseHdfsNameNode1Data
+  orderLakeHouseHdfsNameNode2Data:
+    name: orderLakeHouseHdfsNameNode2Data
+  orderLakeHouseHdfsDataNode1Data:
+    name: orderLakeHouseHdfsDataNode1Data
+  orderLakeHouseHdfsDataNode2Data:
+    name: orderLakeHouseHdfsDataNode2Data
+  orderLakeHouseHdfsNodeManager1Data:
+    name: orderLakeHouseHdfsNodeManager1Data
+  orderLakeHouseHdfsNodeManager2Data:
+    name: orderLakeHouseHdfsNodeManager2Data

@@ -14,7 +14,7 @@
     </parent>
 
     <groupId>org.hackctl.order.orderlakehouse.producer</groupId>
-    <artifactId>orderlakehouse-kafka-producer-generic</artifactId>
+    <artifactId>orderlakehouse-kafka-producer-generic-svc</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>

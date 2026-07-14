@@ -1,0 +1,22 @@
+# !/bin/bash
+
+# kill containers remove volumes remove networks  
+
+# remove the producer service
+docker compose -f ./producer/docker-compose.yml --profile compile down -v
+docker compose -f ./producer/docker-compose.yml --profile run down -v
+
+# remove the consumer service
+docker compose -f ./producer/docker-compose.yml --profile compile down -v
+docker compose -f ./consumer/docker-compose.yml --profile run down -v
+
+# de provision kafka cluster 
+docker compose -f ./kafka/kafka.yml down -v 
+docker network remove orderLakeHouseKafka091Network --force 
+docker volume remove orderLakeHouseKafka091Node1Data orderLakeHouseKafka091Node2Data orderLakeHouseKafka091Node3Data --force
+
+ 
+# provision the hadoop cluster
+docker compose -f ./hdfs/hdfs.yml down -v 
+docker network remove orderLakeHouseHdfsNetwork --force
+docker volume remove orderLakeHouseHdfsNode1Data orderLakeHouseHdfsNode2Data orderLakeHouseHdfsNode3Data --force

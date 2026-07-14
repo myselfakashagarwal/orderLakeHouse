@@ -1,0 +1,4 @@
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+COPY ./target/orderlakehouse-kafka-to-hdfs-ingestor-svc-1.0-SNAPSHOT.jar .
+ENTRYPOINT [ "java", "-jar", "orderlakehouse-kafka-to-hdfs-ingestor-svc-1.0-SNAPSHOT.jar" ]

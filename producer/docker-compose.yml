@@ -36,20 +36,14 @@ services:
       - SPRING_KAFKA_PRODUCER_VALUE_SERIALIZER=org.springframework.kafka.support.serializer.JsonSerializer
     command: java -jar target/orderlakehouse-kafka-producer-generic-1.0-SNAPSHOT.jar
 
-  deploy:
-    image: maven:3.9.6-eclipse-temurin-17
+  build:
     profiles:
-      - deploy
-    volumes:
-      - .:/app
-      - ~/.m2:/root/.m2
-      - /var/run/docker.sock:/var/run/docker.sock
-    working_dir: /app
-
-    command: >
-      mvn spring-boot:build-image
-      -Dspring-boot.build-image.imageName=ghcr.io/myselfakashagarwal/orderlakehouse/orderlakehouse-producer-generic:1.0-SNAPSHOT
-      -Dspring-boot.build-image.publish=true
+      - build
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: ghcr.io/myselfakashagarwal/orderlakehouse/orderlakehouse-kafka-producer-generic-svc:1.0-SNAPSHOT
+    entrypoint: ["true"]
 
 networks:
   orderLakeHouseKafka091Network:

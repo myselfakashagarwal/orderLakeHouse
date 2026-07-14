@@ -1,0 +1,19 @@
+# !/bin/bash
+
+# provision kafka cluster 
+docker compose -f ./kafka/kafka.yml up -d
+
+# package the producer service 
+docker compose -f ./producer/docker-compose.yml --profile compile up -d
+
+# run the producer service
+docker compose -f ./producer/docker-compose.yml --profile run up -d 
+
+# provision the hadoop cluster
+docker compose -f ./hdfs/hdfs.yml up -d
+
+# package the consumer service
+docker compose -f ./consumer/docker-compose.yml --profile compile up -d
+
+# run the consumer service
+docker compose -f ./consumer/docker-compose.yml --profile run up -d
